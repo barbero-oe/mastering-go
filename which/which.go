@@ -72,11 +72,13 @@ func search_in(name string, dirs []string) []string {
 	for _, dir := range dirs {
 		path := filepath.Join(dir, name)
 		info, err := os.Stat(path)
-		if err == nil {
-			mode := info.Mode()
-			if mode.IsRegular() && mode.Perm()&0111 != 0 {
-				found_in = append(found_in, path)
-			}
+		if err != nil {
+			continue
+		}
+		mode := info.Mode()
+		isExecutable := mode.Perm()&0111 != 0
+		if mode.IsRegular() && isExecutable {
+			found_in = append(found_in, path)
 		}
 	}
 	return found_in
